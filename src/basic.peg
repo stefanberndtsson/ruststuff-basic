@@ -1,0 +1,19 @@
+use super::*;
+
+#[pub]
+code -> Vec<Line>
+     = l:line+ { l }
+
+line -> Line
+     = n:linenum " " s:stmt "\n" { Line { linenum: n, stmt: s } }
+
+linenum -> u32
+     = n:$([0-9]+) { n.parse().unwrap() }
+
+stmt -> Stmt
+     = "PRINT" " " p:printparam { Stmt::Print(p) }
+     / "GOTO" " " n:linenum { Stmt::Goto(n) }
+
+printparam -> Param
+     = "\"" s:$([a-zA-Z0-9 ]+) "\"" { Param::String(s.to_string()) }
+
