@@ -4,10 +4,7 @@
 mod parser;
 
 fn main() {
-    let parsed = parser::parse("10 PRINT \"HELLO\"\n20 GOTO 10\n");
-    println!("{:#?}", parsed);
-    match parsed {
-        Ok(p) => parser::execute(&p),
-        _ => ()
-    }
+//    parser::run("10 LET A$ = \"MY TEXT\"\n20 PRINT \"HELLO\"\n30 PRINT A$\n40 GOTO 40\n");
+    parser::run("10 LET A = 129\n20 PRINT \"HELLO\"\n30 PRINT A\n40 GOTO 40\n");
+//    parser::run("10 LET A$=\"MY TEXT\"\n");
 }

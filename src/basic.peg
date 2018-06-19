@@ -1,19 +1,37 @@
 use super::*;
 
+#![arguments(codestate: &mut Code)]
+
 #[pub]
-code -> Vec<Line>
-     = l:line+ { l }
+code -> ()
+     = l:line+ { for line in l { println!("DEBUG: {:?}", line); codestate.lines.push(line); } }
 
 line -> Line
      = n:linenum " " s:stmt "\n" { Line { linenum: n, stmt: s } }
 
 linenum -> u32
-     = n:$([0-9]+) { n.parse().unwrap() }
+     = n:$([0-9]+) { println!("DEBUG: {:?}", n); n.parse().unwrap() }
 
 stmt -> Stmt
      = "PRINT" " " p:printparam { Stmt::Print(p) }
+     / "LET" " " v:strvar " "* "=" " "* d:strparam { println!("DEBUG: {:?}", v); Stmt::Let(v,d) }
+     / "LET" " " v:numvar " "* "=" " "* d:numparam { println!("DEBUG: {:?}", v); Stmt::Let(v,d) }
      / "GOTO" " " n:linenum { Stmt::Goto(n) }
 
-printparam -> Param
-     = "\"" s:$([a-zA-Z0-9 ]+) "\"" { Param::String(s.to_string()) }
+strvar -> Param
+     = v:$([A-Z]) "\$" { println!("DEBUG: {:?}", v); Param::StrVar(v.to_string()) }
 
+strparam -> Param
+     = "\"" s:$([a-zA-Z0-9 ]+) "\"" { println!("DEBUG: {:?}", s); Param::String(s.to_string()) }
+
+numvar -> Param
+     = v:$([A-Z]) { println!("DEBUG: {:?}", v); Param::NumVar(v.to_string()) }
+
+numparam -> Param
+     = n:$([-0-9][0-9]*) { println!("DEBUG: {:?}", n); Param::Num(n.parse().unwrap()) }
+
+printparam -> Param
+     = strparam
+     / numparam
+     / strvar
+     / numvar
